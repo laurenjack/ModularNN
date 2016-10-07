@@ -77,7 +77,7 @@ class NetworkRunner:
         #test, no_correct = self.__class_error_test(test_data, n_test, network)
         #test_errors.append(no_correct)
         for j in xrange(epochs):
-            if (j+1)%30 == 0:
+            if (j+1)%25 == 0:
                 for act in network.activations:
                     act.opt().decay_learning_rate(1.0/3.0)
             random.shuffle(training_data)
