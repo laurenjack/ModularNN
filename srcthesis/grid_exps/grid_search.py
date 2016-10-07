@@ -1,10 +1,8 @@
 import srcthesis.network.network_factory as nf
 import srcthesis.network.network_runner as nr
-import mnist_loader
+import srcthesis.run.mnist_loader
 
-def build_hyps(eta1, eta2, ws, num_layers,  num_logics):
-    if num_logics == 0:
-        return [eta1] * num_layers
+def build_hyps(eta1, eta2, ws, num_layers):
     if num_layers == 3:
         return [eta1, (eta2, ws), eta1]
     if num_layers == 4:
@@ -12,9 +10,9 @@ def build_hyps(eta1, eta2, ws, num_layers,  num_logics):
     raise NotImplementedError("No case for the arguments passed")
 
 
-def grid_search(sizes, act_strings, eta1_grid_1, eta2_grid_2, ws_grid, num_logics=1):
+def grid_search(sizes, act_strings, eta1_grid_1, eta2_grid_2, ws_grid):
     # Load the data
-    training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
+    training_data, validation_data, test_data = srcthesis.run.mnist_loader.load_data_wrapper()
     runner = nr.NetworkRunner()
 
     #File to store results
@@ -24,14 +22,14 @@ def grid_search(sizes, act_strings, eta1_grid_1, eta2_grid_2, ws_grid, num_logic
     for eta1 in eta1_grid_1:
         for eta2 in eta2_grid_2:
             for ws in ws_grid:
-                hypers = build_hyps(eta1, eta2, ws, num_layers, num_logics)
+                hypers = build_hyps(eta1, eta2, ws, num_layers)
                 network = nf.mix_network(sizes, act_strings, hypers)
                 val_er = runner.sgd_tracking_error(network, training_data, 10, 50, validation_data)
                 to_file(f, hypers, val_er)
 
 def grid_search_2_logics(sizes, act_strings, eta_grid, ws_grid_1, ws_grid_2):
     # Load the data
-    training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
+    training_data, validation_data, test_data = srcthesis.run.mnist_loader.load_data_wrapper()
     runner = nr.NetworkRunner()
 
     # File to store results
@@ -49,14 +47,15 @@ def grid_search_2_logics(sizes, act_strings, eta_grid, ws_grid_1, ws_grid_2):
 
 def grid_search_vanilla(sizes, act_strings, eta_grid):
     # Load the data
-    training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
+    training_data, validation_data, test_data = srcthesis.run.mnist_loader.load_data_wrapper()
     runner = nr.NetworkRunner()
 
     #File to store results
     f = load_file(act_strings, sizes)
+    num_layers = len(sizes) - 1
 
     for eta in eta_grid:
-        hypers = [eta, eta, eta]
+        hypers = [eta] * num_layers
         network = nf.mix_network(sizes, act_strings, hypers)
         val_er = runner.sgd_tracking_error(network, training_data, 10, 50, validation_data)
         to_file(f, hypers, val_er)
