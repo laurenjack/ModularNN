@@ -22,7 +22,8 @@ def to_file(f, test_errors):
 
 def run_30_times(name):
     # Load network hyper-parameters
-    sizes, act_strings, hypers = on.get_optimal('sig-sm')
+    sizes, act_strings, hypers = on.get_optimal(name)
+    print name
     network = nf.mix_network(sizes, act_strings, hypers)
 
     # Load the data
