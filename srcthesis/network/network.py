@@ -4,12 +4,13 @@ from activations import Linear
 
 class Network:
 
-    def __init__(self, weights, biases, activations):
+    def __init__(self, weights, biases, activations, name='network'):
         """Create a neural network, specified by the layers which have varying sizes and activations"""
         self.num_layers = len(weights)+1
         self.weights = weights
         self.biases = biases
         self.activations = activations
+        self.name = name
 
 
     def feedforward(self, a):
@@ -24,20 +25,20 @@ class Network:
         gradient descent using backpropagation using a single mini batch.
         The 'mini_batch' is a list of tuples (x, y) and eta
         is the learning rate"""
-        # A list of zeroed out vectors, corresponding to each bias vector
-        # and its dimensions
+        nabla_w, nabla_b = self.get_grads_for_mini_batch(mini_batch)
+        self.weights = [act.opt().update_weights(w, dw, mini_batch)
+         for w, dw, act in zip(self.weights,nabla_w, self.activations)]
+        self.biases = [act.opt().update_biases(b, db, mini_batch)
+         for b, db, act in zip(self.biases, nabla_b, self.activations)]
+
+    def get_grads_for_mini_batch(self, mini_batch):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
-        # A list of zeroed out matricies corresponding to each weight matrix
-        # and its dimensions
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [act.opt().update_weights(w, dw, mini_batch)
-         for w, dw, act in zip(self.weights,nabla_w, self.activations)]
-        self.biases = [act.opt().update_biases(b, db, mini_batch)
-         for b, db, act in zip(self.biases, nabla_b, self.activations)]
+        return nabla_w, nabla_b
 
 
     def backprop(self, x, y):

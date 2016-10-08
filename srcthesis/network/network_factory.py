@@ -16,6 +16,9 @@ def mix_network(sizes, acts, hyp_params, regs=None):
     for act, hp in zip(acts, hyp_params):
         activations.append(__construct_act(act, hp))
 
+    #Create the name
+    __create_name(acts)
+
     return Network(weights, biases, activations)
 
 def relu_with_linear_final(sizes, eta, weights=None, biases=None):
@@ -47,14 +50,14 @@ def __construct_activations(relu_widths, eta):
     activations.append(Linear(sgd))
     return activations
 
-def pure_or(sizes):
-    weights = [__postive_normal(y, x)
-               for x, y in zip(sizes[:-1], sizes[1:])]
-    biases = [__postive_normal(y, 1)
-              for y in sizes[1:]]
-    num_layers = len(sizes)
-    activations = [NoisyOr() for i in xrange(num_layers)]
-    return Network(weights, biases, activations, keep_positive_sgd)
+# def pure_or(sizes):
+#     weights = [__postive_normal(y, x)
+#                for x, y in zip(sizes[:-1], sizes[1:])]
+#     biases = [__postive_normal(y, 1)
+#               for y in sizes[1:]]
+#     num_layers = len(sizes)
+#     activations = [NoisyOr() for i in xrange(num_layers)]
+#     return Network(weights, biases, activations, keep_positive_sgd)
 
 def __positive_normal(c, s1, s0):
     return c*abs(np.random.randn(s1, s0))
@@ -97,4 +100,10 @@ def __construct_act(act_string, hp, reg=None):
         sgd = Sgd(hp)
         return Softmax(sgd)
     raise NotImplementedError('Factory does not handle the constuction of the activation: '+act_string)
+
+def __create_name(act_strings):
+    name = ''
+    for act in act_strings[:-1]:
+        name+=act+'-'
+    return name+act[-1]
 
