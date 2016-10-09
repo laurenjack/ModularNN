@@ -84,20 +84,35 @@ def __construct_w_b(act_string, s0, s1, hyp_params):
     return weights, biases
 
 
-def __construct_act(act_string, hp, reg=None):
+def __construct_act(act_string, hp, reg):
+
     if act_string == 'sig':
-        sgd = Sgd(hp)
+        sgd = None
+        if reg:
+            sgd = Sgd_Regularisation(hp)
+        else:
+            sgd = Sgd(hp)
         return Sigmoid(sgd)
     if act_string == 'or':
         eta = hp[0]
-        pos_sgd = KeepPositiveSgd(eta)
+        if reg:
+            pos_sgd = KeepPositiveSgd(eta)
+        else:
+            pos_sgd = KeepPositiveRegSgd(eta)
         return NoisyOr(pos_sgd)
     if act_string == 'and':
         eta = hp[0]
-        pos_sgd = KeepPositiveSgd(eta)
+        if reg:
+            pos_sgd = KeepPositiveSgd(eta)
+        else:
+            pos_sgd = KeepPositiveRegSgd(eta)
         return NoisyAnd(pos_sgd)
     if act_string == 'sm':
-        sgd = Sgd(hp)
+        sgd = None
+        if reg:
+            sgd = Sgd_Regularisation(hp)
+        else:
+            sgd = Sgd(hp)
         return Softmax(sgd)
     raise NotImplementedError('Factory does not handle the constuction of the activation: '+act_string)
 
