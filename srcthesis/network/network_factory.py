@@ -84,7 +84,15 @@ def __construct_w_b(act_string, s0, s1, hyp_params):
     return weights, biases
 
 
-def __construct_act(act_string, hp, reg=None):
+def __construct_act(act_string, hp, reg):
+    # #Construct optimizers
+    # if reg:
+    #     sgd = Sgd_Regularisation(hp)
+    #     pos_sgd =
+    # else:
+    #     sgd = Sgd(hp)
+    #     pos_sgd = KeepPositiveSgd(eta)
+
     if act_string == 'sig':
         sgd = Sgd(hp)
         return Sigmoid(sgd)
