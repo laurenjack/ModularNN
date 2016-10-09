@@ -88,9 +88,9 @@ class NetworkRunner:
                 reported_dws.append(dw)
                 reported_dbs.append(db)
 
-            if (j+1)%30 == 0:
-                for act in network.activations:
-                    act.opt().decay_learning_rate(1.0/3.0)
+            # if (j+1)%30 == 0:
+            #     for act in network.activations:
+            #         act.opt().decay_learning_rate(1.0/3.0)
             # Make a list of lists, i.e. a lsit of distinct training data subsets
             mini_batches = [
                 training_data[k:k + mini_batch_size]

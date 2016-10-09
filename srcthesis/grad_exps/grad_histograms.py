@@ -13,6 +13,12 @@ def to_histogram(name, report_grad_epochs, reported_dws, reported_dbs):
         break
     plt.show()
 
+def to_file(name, report_grad_epochs, reported_dws, reported_dbs):
+    f = open(name, 'w')
+    f.write(report_grad_epochs+'\n')
+    f.write(reported_dws + '\n')
+    f.write(reported_dbs + '\n')
+
 def histograms_for(network):
     # Load the data
     training_data, validation_data, test_data = ml.load_data_wrapper()
@@ -23,13 +29,16 @@ def histograms_for(network):
     training_data.extend(validation_data)
     runner = nr.NetworkRunner()
 
-    report_grad_epochs = [0, 1, 4]
-    _, reported_dws, reported_dbs = runner.sgd_tracking_error(network, training_data, 10, 5, test_data, report_grad_epochs)
-    to_histogram(network.name, report_grad_epochs, reported_dws, reported_dbs)
+    report_grad_epochs = [0, 1, 9, 19, 29]
+    _, reported_dws, reported_dbs = runner.sgd_tracking_error(network, training_data, 10, 30, test_data, report_grad_epochs)
+    to_file(network.name, report_grad_epochs, reported_dws, reported_dbs)
 
 
 #Load optimal parameters for this network
-sizes, act_strings, hypers = on.get_optimal('sig-sm')
-network = nf.mix_network(sizes, act_strings, hypers)
-histograms_for(network)
+net_names = ['sig-sm', 'sig-sig-sm', 'sig-sig-sig-sm']
+for name in net_names:
+    sizes, act_strings, hypers = on.get_optimal(name)
+    network = nf.mix_network(sizes, act_strings, hypers)
+    histograms_for(network)
+
 
