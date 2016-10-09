@@ -17,9 +17,9 @@ def mix_network(sizes, acts, hyp_params, regs=None):
         activations.append(__construct_act(act, hp))
 
     #Create the name
-    __create_name(acts)
+    name = __create_name(acts)
 
-    return Network(weights, biases, activations)
+    return Network(weights, biases, activations, name=name)
 
 def relu_with_linear_final(sizes, eta, weights=None, biases=None):
     """Construct a relu with a linear output layer, useful for regression problems"""
@@ -105,5 +105,5 @@ def __create_name(act_strings):
     name = ''
     for act in act_strings[:-1]:
         name+=act+'-'
-    return name+act[-1]
+    return name+act_strings[-1]
 

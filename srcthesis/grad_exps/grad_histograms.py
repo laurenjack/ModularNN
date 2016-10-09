@@ -15,9 +15,9 @@ def to_histogram(name, report_grad_epochs, reported_dws, reported_dbs):
 
 def to_file(name, report_grad_epochs, reported_dws, reported_dbs):
     f = open(name, 'w')
-    f.write(report_grad_epochs+'\n')
-    f.write(reported_dws + '\n')
-    f.write(reported_dbs + '\n')
+    f.write(str(report_grad_epochs)+'\n')
+    f.write(str(reported_dws) + '\n')
+    f.write(str(reported_dbs) + '\n')
 
 def histograms_for(network):
     # Load the data
@@ -35,7 +35,7 @@ def histograms_for(network):
 
 
 #Load optimal parameters for this network
-net_names = ['sig-sm', 'sig-sig-sm', 'sig-sig-sig-sm']
+net_names = ['sig-sig-and-sm', 'sig-or-and-sm', 'sig-and-or-sm']
 for name in net_names:
     sizes, act_strings, hypers = on.get_optimal(name)
     network = nf.mix_network(sizes, act_strings, hypers)
