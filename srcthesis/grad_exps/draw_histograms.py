@@ -12,3 +12,7 @@ def to_histogram(name, report_grad_epochs, reported_dws, reported_dbs):
             break
         break
     plt.show()
+
+def draw_hist_for(name):
+    f = open(name, 'r')
+

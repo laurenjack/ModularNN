@@ -88,9 +88,9 @@ class NetworkRunner:
                 reported_dws.append(dw)
                 reported_dbs.append(db)
 
-            # if (j+1)%30 == 0:
-            #     for act in network.activations:
-            #         act.opt().decay_learning_rate(1.0/3.0)
+            if (j+1)%500 == 0:
+                for act in network.activations:
+                    act.opt().decay_learning_rate(1.0/3.0)
             # Make a list of lists, i.e. a lsit of distinct training data subsets
             mini_batches = [
                 training_data[k:k + mini_batch_size]
@@ -120,8 +120,10 @@ class NetworkRunner:
         network outputs the correct result. Note that the neural
         network's output is assumed to be the index of whichever
         neuron in the final layer has the highest activation."""
+        network.half_weights()
         test_results = [(np.argmax(network.feedforward(x)), y)
                         for (x, y) in test_data]
+        network.double_weights()
         return sum(int(x == y) for (x, y) in test_results)
 
     def evaluate_train(self, network, test_data):

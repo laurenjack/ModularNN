@@ -2,8 +2,10 @@ import numpy as np
 from network import Network
 from activations import *
 from optimizers import *
+from dropout import *
 
-def mix_network(sizes, acts, hyp_params, regs=None):
+
+def mix_network(sizes, acts, hyp_params, dropout=False, reg=False):
     #Construct the weights and biases
     weights, biases = [], []
     for act, hp, s0, s1 in zip(acts, hyp_params, sizes[:-1], sizes[1:]):
@@ -13,13 +15,18 @@ def mix_network(sizes, acts, hyp_params, regs=None):
 
     #Construct each activation
     activations = []
-    for act, hp in zip(acts, hyp_params):
-        activations.append(__construct_act(act, hp))
+    for act, hp, width in zip(acts, hyp_params, sizes[1:]):
+        activations.append(__construct_act(act, hp, width, reg))
 
     #Create the name
     name = __create_name(acts)
 
-    return Network(weights, biases, activations, name=name)
+    if dropout:
+        drop_scheme = DropOut(sizes)
+    else:
+        drop_scheme = DropNull()
+
+    return Network(weights, biases, activations, name=name, drop_scheme=drop_scheme)
 
 def relu_with_linear_final(sizes, eta, weights=None, biases=None):
     """Construct a relu with a linear output layer, useful for regression problems"""
@@ -79,15 +86,17 @@ def __construct_w_b(act_string, s0, s1, hyp_params):
     elif act_string == 'sm':
         weights = xc * np.random.randn(s1, s0)
         biases = xc * np.random.randn(s1, 1)
+    elif act_string == 'relu':
+        weights = xc* np.random.randn(s1, s0)
+        biases = 0.1 * np.random.randn(s1, 1)
     else:
         raise NotImplementedError('Factory does not handle the constuction of the activation: ' + act_string)
     return weights, biases
 
 
-def __construct_act(act_string, hp, reg):
+def __construct_act(act_string, hp, width, reg):
 
     if act_string == 'sig':
-        sgd = None
         if reg:
             sgd = Sgd_Regularisation(hp)
         else:
@@ -96,16 +105,16 @@ def __construct_act(act_string, hp, reg):
     if act_string == 'or':
         eta = hp[0]
         if reg:
-            pos_sgd = KeepPositiveSgd(eta)
-        else:
             pos_sgd = KeepPositiveRegSgd(eta)
+        else:
+            pos_sgd = KeepPositiveSgd(eta)
         return NoisyOr(pos_sgd)
     if act_string == 'and':
         eta = hp[0]
         if reg:
-            pos_sgd = KeepPositiveSgd(eta)
-        else:
             pos_sgd = KeepPositiveRegSgd(eta)
+        else:
+            pos_sgd = KeepPositiveSgd(eta)
         return NoisyAnd(pos_sgd)
     if act_string == 'sm':
         sgd = None
@@ -114,6 +123,12 @@ def __construct_act(act_string, hp, reg):
         else:
             sgd = Sgd(hp)
         return Softmax(sgd)
+    if act_string == 'relu':
+        if reg:
+            sgd = Sgd_Regularisation(hp)
+        else:
+            sgd = Sgd(hp)
+        return Relu(width, sgd)
     raise NotImplementedError('Factory does not handle the constuction of the activation: '+act_string)
 
 def __create_name(act_strings):
