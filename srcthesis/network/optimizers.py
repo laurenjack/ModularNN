@@ -1,5 +1,7 @@
 import numpy as np
 
+reg = 0.0001
+
 class Optimizer:
 
     def __init__(self, eta, reg=None):
@@ -20,7 +22,7 @@ class Sgd(Optimizer):
 class Sgd_Regularisation(Optimizer):
 
     def update_weights(self, w, dw, mini_batch):
-        return (1-self.eta*0.01)*w - (self.eta / len(mini_batch)) * dw #0.0001
+        return (1-self.eta*reg)*w - (self.eta / len(mini_batch)) * dw
 
     def update_biases(self, b, db, mini_batch):
         return b - (self.eta / len(mini_batch)) * db
@@ -30,7 +32,7 @@ class Sgd_Regularisation(Optimizer):
 class KeepPositiveRegSgd(Optimizer):
 
     def update_weights(self, w, dw, batch):
-        w = (1-self.eta*0.0001)*w #0.0001
+        w = (1-self.eta*reg)*w
         return positive_gradient_Update(w, dw, batch, self.sta)
 
     def update_biases(self, b, db, batch):

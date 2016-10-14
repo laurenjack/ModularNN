@@ -23,6 +23,17 @@ class Network:
             a = act.apply(z)
         return a
 
+    def feedforward_to(self, a, l):
+        """Only feedforward to the layer l"""
+        current_layer = 0;
+        for b, w, act, in zip(self.biases, self.weights, self.activations):
+            if current_layer == l:
+                break
+            z = act.weighted_sum(w, b, a)
+            a = act.apply(z)
+            current_layer += 1
+        return a
+
     def update_mini_batch(self, mini_batch):
         self.drop_scheme.new_batch()
         """Update the network's weights and biases by applying
