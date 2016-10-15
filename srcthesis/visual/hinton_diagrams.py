@@ -36,20 +36,27 @@ def w_to_hinton(w, fig_num):
     plt.figure(fig_num)
     plt.imshow(w, interpolation="nearest" ,cmap='Greys')
 
-def plot_feature_map_for(neuron_indexes, network):
+def plot_feature_map_for(big_weights, neuron_indexes, network):
     fig_num = 2
-    for ind in neuron_indexes:
+    image_sum = np.zeros((28, 28))
+    for bw, ind in zip(big_weights, neuron_indexes):
         w = network.weights[0][ind]
-        w_to_hinton(w.reshape(28, 28), fig_num)
+        as_image = w.reshape(28, 28)
+        image_sum += bw*(1.0- as_image)
+        w_to_hinton(as_image, fig_num)
         fig_num += 1
+    image_sum = np.exp(-image_sum)
+    w_to_hinton(image_sum, fig_num)
 
 
 
 
 
 # Load network hyper-parameters
-sizes, act_strings, hypers = on.get_optimal('sig-and-sm')
-network = nf.mix_network(sizes, act_strings, hypers)
+sizes, act_strings, hypers = on.get_optimal('sig-or-sm')
+hypers = [hypers[1], hypers[1]]
+network = nf.mix_network([784, 30, 10], ['or', 'or'], hypers)
+#network = nf.mix_network(sizes, act_strings, hypers)
 
 # Load the data
 training_data, validation_data, test_data = ml.load_data_wrapper()
@@ -64,7 +71,7 @@ runner = nr.NetworkRunner()
 test_errors = runner.sgd_tracking_error(network, training_data, 10, 5, test_data)
 
 #Pick the first two from the training data
-x = pick(training_data, 8)
+x = pick(training_data, 5)
 
 #Get the maximally executing AND neuron's weights
 ws_of_maximal = get_weights_of_maximal(network, x, 2)
@@ -73,7 +80,8 @@ ws_of_maximal = get_weights_of_maximal(network, x, 2)
 big_ws, big_inds = get_weights_and_inds_over(0.1, ws_of_maximal)
 
 #Finally, draw the feature maps that correspond to these
-plot_feature_map_for(big_inds, network)
+plot_feature_map_for(big_ws, big_inds, network)
+print big_ws
 plt.show()
 
 
@@ -81,9 +89,11 @@ plt.show()
 
 
 
-for i in xrange(1):
-    print network.weights[2][:, i]
-    w_to_hinton(network.weights[0][i].reshape(28,28), i+1)
-    w_to_hinton(network.weights[1], i + 1)
-    to_histogram(network.weights[1])
-plt.show()
+
+
+# for i in xrange(1):
+#     print network.weights[2][:, i]
+#     w_to_hinton(network.weights[0][i].reshape(28,28), i+1)
+#     w_to_hinton(network.weights[1], i + 1)
+#     to_histogram(network.weights[1])
+# plt.show()
