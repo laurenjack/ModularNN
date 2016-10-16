@@ -71,7 +71,7 @@ training_data.extend(validation_data)
 runner = nr.NetworkRunner()
 
 #Train the network
-test_errors = runner.sgd_tracking_error(network, training_data, 10, 30, test_data)
+test_errors = runner.sgd_tracking_error(network, training_data, 10, 60, test_data)
 
 #Pick the first two from the training data
 x = pick(training_data, 5)

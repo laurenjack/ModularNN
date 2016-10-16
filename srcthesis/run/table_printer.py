@@ -15,4 +15,4 @@ def get_best(name):
                 min_name = current_name.rstrip()
     print min_name+": "+str(min_err)
 
-get_best('../grid_exps/sig-sig-sm')
+get_best('../grid_exps/or-and-784-30-10')

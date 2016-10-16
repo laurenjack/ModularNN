@@ -60,6 +60,23 @@ def grid_search_vanilla(sizes, act_strings, eta_grid):
         val_er = runner.sgd_tracking_error(network, training_data, 10, 50, validation_data)
         to_file(f, hypers, val_er)
 
+def grid_search_or_and(sizes, act_strings, eta_grid1, eta_grid2):
+    # Load the data
+    training_data, validation_data, test_data = srcthesis.run.mnist_loader.load_data_wrapper()
+    runner = nr.NetworkRunner()
+
+    # File to store results
+    f = load_file(act_strings, sizes)
+
+    for eta1 in eta_grid1:
+        for eta2 in eta_grid2:
+            hypers = [(eta1, 0.01), (eta2, 0.001)]
+            network = nf.mix_network(sizes, act_strings, hypers)
+            val_er = runner.sgd_tracking_error(network, training_data, 10, 50, validation_data)
+            to_file(f, hypers, val_er)
+
+
+
 def load_file(act_strings, sizes):
     #Prep the name
     name = ''
