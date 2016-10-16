@@ -85,7 +85,7 @@ def __construct_w_b(act_string, s0, s1, hyp_params):
         biases = __positive_normal(w_scale, s1, 1)
     elif act_string == 'sm':
         weights = xc * np.random.randn(s1, s0)
-        biases = xc * np.random.randn(s1, 1)
+        biases =  xc * np.random.randn(s1, 1)
     elif act_string == 'relu':
         weights = xc* np.random.randn(s1, s0)
         biases = 0.1 * np.random.randn(s1, 1)

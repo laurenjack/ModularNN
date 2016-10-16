@@ -38,7 +38,7 @@ def run_30_times(name):
     # File to store results
     f = load_file(act_strings, sizes)
 
-    for i in xrange(15):
+    for i in xrange(5):
         network = nf.mix_network(sizes, act_strings, hypers, reg=True)
         test_errors = runner.sgd_tracking_error(network, training_data, 10, 60, test_data)
         to_file(f, test_errors)
