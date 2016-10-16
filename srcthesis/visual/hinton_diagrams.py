@@ -31,7 +31,7 @@ def get_weights_and_inds_over(t, ws_of_maximal):
     return weights, inds
 
 def to_histogram(w):
-    plt.figure(1)
+    plt.figure(1, facecolor='white')
     plt.hist(w.flatten(), bins=50, normed=True, stacked=True)
 
 def w_to_hinton(w, fig_num, sub):
@@ -43,7 +43,7 @@ def w_to_hinton(w, fig_num, sub):
 
 def plot_feature_map_for(big_weights, neuron_indexes, network):
     fig_num = 2
-    plt.figure(2)
+    plt.figure(2, facecolor='white')
     #n_count = 0;
     sub = 1
     im_sum = np.zeros((28, 28))
@@ -51,13 +51,13 @@ def plot_feature_map_for(big_weights, neuron_indexes, network):
         w = network.weights[0][ind]
         as_image = w.reshape(28, 28)
         #unique = np.where(im_sum < 0.5, as_image, np.zeros((28, 28)))
-        im_sum += np.where(as_image > 1.0, bw*as_image, np.zeros((28, 28)))
+        im_sum += np.where(as_image > 0.75, bw*as_image, np.zeros((28, 28)))
         w_to_hinton(as_image, fig_num, sub)
         # n_count += 1
         # if n_count%n == 0:
         #     sub += 100 - n
         sub += 1
-    plt.figure(3)
+    plt.figure(3, facecolor='white')
     ax = plt.gca()
     ax.yaxis.set_visible(False)
     ax.xaxis.set_visible(False)
@@ -69,7 +69,7 @@ def plot_feature_map_for(big_weights, neuron_indexes, network):
 
 
 # Load network hyper-parameters
-sizes, act_strings, hypers = on.get_optimal('or-and')
+sizes, act_strings, hypers = on.get_optimal('sig-and')
 #hypers = [hypers[1], hypers[1]]
 #network = nf.mix_network([784, 30, 10], ['or', 'or'], hypers)
 network = nf.mix_network(sizes, act_strings, hypers)
@@ -94,7 +94,7 @@ x = pick(training_data, 1)
 ws_of_output = network.weights[1][3]
 
 #Get all the big, non-negilgible weights from this maximal neuron
-big_ws, big_inds = get_weights_and_inds_over(2.0, ws_of_output)
+big_ws, big_inds = get_weights_and_inds_over(1.5, ws_of_output)
 
 #Finally, draw the feature maps that correspond to these
 plot_feature_map_for(big_ws, big_inds, network)
