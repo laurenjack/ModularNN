@@ -7,10 +7,10 @@ import srcthesis.run.mnist_loader as ml
 import matplotlib.pyplot as plt
 
 # Load network hyper-parameters
-sizes, act_strings, hypers = on.get_optimal('sig-or-sm')
-hypers = [hypers[1], hypers[1]]
-network = nf.mix_network([784, 30, 10], ['or', 'and'], hypers)
-#network = nf.mix_network(sizes, act_strings, hypers)
+sizes, act_strings, hypers = on.get_optimal('or-and')
+#hypers = [hypers[1], hypers[1]]
+#network = nf.mix_network([784, 30, 10], ['or', 'and'], hypers)
+network = nf.mix_network(sizes, act_strings, hypers)
 
 # Load the data
 training_data, validation_data, test_data = ml.load_data_wrapper()
@@ -22,7 +22,7 @@ training_data.extend(validation_data)
 runner = nr.NetworkRunner()
 
 #Train the network
-test_errors = runner.sgd_tracking_error(network, training_data, 10, 30, test_data)
+test_errors = runner.sgd_tracking_error(network, training_data, 10, 40, test_data)
 
 def pick_n(first_layer, n):
     num_feat = first_layer.shape[0]
