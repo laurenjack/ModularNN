@@ -33,7 +33,10 @@ def to_histogram(w):
     plt.hist(w.flatten(), bins=50, normed=True, stacked=True)
 
 def w_to_hinton(w, fig_num):
-    plt.figure(fig_num)
+    plt.figure(fig_num, facecolor="white")
+    ax = plt.gca()
+    ax.yaxis.set_visible(False)
+    ax.xaxis.set_visible(False)
     plt.imshow(w, interpolation="nearest" ,cmap='Greys')
 
 def plot_feature_map_for(big_weights, neuron_indexes, network):
@@ -53,10 +56,10 @@ def plot_feature_map_for(big_weights, neuron_indexes, network):
 
 
 # Load network hyper-parameters
-sizes, act_strings, hypers = on.get_optimal('sig-or-sm')
-hypers = [hypers[1], hypers[1]]
-network = nf.mix_network([784, 30, 10], ['or', 'or'], hypers)
-#network = nf.mix_network(sizes, act_strings, hypers)
+sizes, act_strings, hypers = on.get_optimal('sig-sm')
+#hypers = [hypers[1], hypers[1]]
+#network = nf.mix_network([784, 30, 10], ['or', 'or'], hypers)
+network = nf.mix_network(sizes, act_strings, hypers)
 
 # Load the data
 training_data, validation_data, test_data = ml.load_data_wrapper()
@@ -68,7 +71,7 @@ training_data.extend(validation_data)
 runner = nr.NetworkRunner()
 
 #Train the network
-test_errors = runner.sgd_tracking_error(network, training_data, 10, 5, test_data)
+test_errors = runner.sgd_tracking_error(network, training_data, 10, 30, test_data)
 
 #Pick the first two from the training data
 x = pick(training_data, 5)
