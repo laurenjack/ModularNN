@@ -28,6 +28,7 @@ def plot_for(dir, title):
     plt.show()
 
 
-plot_for('three_layer', 'Three Layer Networks')
-plot_for('four_layer', 'Four Layer Networks')
-plot_for('four_layer_two', 'Four Layers, with Two Logical Layers')
+plot_for('two_layer', 'Two Layer Networks')
+#plot_for('three_layer', 'Three Layer Networks')
+#plot_for('four_layer', 'Four Layer Networks')
+#plot_for('four_layer_two', 'Four Layers, with Two Logical Layers')

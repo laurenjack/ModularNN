@@ -1,6 +1,85 @@
 import numpy as np
 
 
+class ModeStats:
+    """Responsible for storing weights and mode strength over time
+    It's assumed the network used is a two layer network"""
+
+    def __init__(self, network, train, X, U, Vt):
+        self.net = network
+
+        #Used to keep track of mode strength
+        self.train = list(train)
+        self.X = X
+        self.Ut = U.transpose()
+        self.V = Vt.transpose()
+
+        self.n = len(train)
+        self.num_out = network.weights[-1].shape[0]
+
+        self.mode_mats = []
+
+    def update(self):
+        #matrix of activations currently produced by the network
+        A = np.zeros((self.num_out, self.n))
+        for xy, i in zip(self.train, xrange(self.n)):
+            a = self.net.feedforward(xy[0])
+            A[:,i] = a[:,0]
+        #Find the covariance matrix of the network output
+        #relative to the input.
+        sigma31_net = (A - A.mean(axis=0)).dot(self.X.transpose())
+        #self.mode_mats.append(sigma31_net)
+        self.mode_mats.append(self.Ut.dot(sigma31_net).dot(self.V))
+
+    def get_diagonals(self):
+        """Return the modes, i.e the diagonals of the weight products
+        that were stored at the """
+        #Create a dictionary with an entry for each mode
+        diags = {}
+        for i in xrange(self.mode_mats[0].shape[0]):
+            diags[i] = []
+
+        for mat in self.mode_mats:
+            for i in xrange(mat.shape[0]):
+                diags[i].append(mat[i, i])
+        return diags
+
+    def get_max_non_diags(self):
+        """Return the maximum non diagonals of the matrix A.Sigma31_net.Xt
+        This will allow us to get a rough idea of how independent the modes
+        were"""
+        #Find the top 5 max non-diagonals
+        num_maxes = 5
+        final_mat = self.mode_mats[-1]
+        m, n = final_mat.shape
+        max_ijs = self.init_max_array(num_maxes)
+        for i in xrange(m):
+            for j in xrange(n):
+                e = final_mat[i, j]
+                if i != j and abs(e) > max_ijs[0][2]:
+                    max_ijs[0] = (i, j, abs(e))
+                #Sort so that the smallest max is last
+                max_ijs = sorted(max_ijs, key=lambda ije : ije[2])
+
+        #Return the mode stregnths of the top 5 non-diagonals over time
+        non_diags = {}
+        for i, j, _ in max_ijs:
+           non_diags[(i, j)] = []
+
+        for mat in self.mode_mats:
+            for i, j, _ in max_ijs:
+                non_diags[(i, j)].append(mat[i, j])
+        return non_diags
+
+
+    def init_max_array(self, num_maxes):
+        """Initialize an array with a bunch of negatives, so that any positive
+        number will be greater than the final element of each tuple 'e'"""
+        return [(-1, -1, -1)]*num_maxes
+
+
+
+
 class WeightStats:
     """Tracks the weights and their gradients after a full bout of training"""
 

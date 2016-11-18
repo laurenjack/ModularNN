@@ -7,7 +7,7 @@ from srcthesis.network import sigmoid as s
 from srcthesis.network import noisy_or as nor
 from srcthesis.network import noisy_and as nand
 from srcthesis.network import linear as ln
-from srcthesis.visual.visual_domain import NodeStats
+from srcthesis.visual.weight_tracker import NodeStats
 from srcthesis.visual.graph_drawer import GraphDrawer
 from srcthesis.problems.random_wrapper import Rand
 from experiment import ExperimentFactory

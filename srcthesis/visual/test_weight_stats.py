@@ -2,7 +2,7 @@ import numpy as np
 from unittest import TestCase
 import mock
 from srcthesis.network.relu import Relu
-from srcthesis.visual.visual_domain import WeightStats
+from srcthesis.visual.weight_tracker import WeightStats
 
 class WeightStatsSpec(TestCase):
 

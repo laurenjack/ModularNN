@@ -15,7 +15,6 @@ class Network:
         self.name = name
         self.drop_scheme = drop_scheme
 
-
     def feedforward(self, a):
         # Return the output of the network of 'a' is input
         for b, w, act in zip(self.biases, self.weights, self.activations):
@@ -75,7 +74,7 @@ class Network:
 
         # backward pass
         act = self.activations[-1]
-        delta = self.cost_derivative(a, y) #* act.prime(a_values[-1])
+        delta = self.cost_derivative(a, y) #* act.prime(a_values[-1]))
         nabla_w[-1], nabla_b[-1] = act.weight_grad(delta, a_values[-2])
         #nabla_b[-1] = delta
         #nabla_w[-1] = np.matmul(delta, a_values[-2].transpose())
@@ -91,8 +90,6 @@ class Network:
             ap = act.prime(a_values[-l])
             delta = np.matmul(weights[-l + 1].transpose(), delta) * ap
             nabla_w[-l], nabla_b[-l] = act.weight_grad(delta, a_values[-l - 1])
-            #nabla_b[-l] = delta
-            #nabla_w[-l] = np.matmul(delta, a_values[-l - 1].transpose())
         return (nabla_b, nabla_w)
 
     def cost_derivative(self, a, y):

@@ -2,7 +2,7 @@ from unittest import TestCase
 import mock
 from srcthesis.network.sigmoid import Sigmoid
 from srcthesis.problems.problem_domain import Observation
-from srcthesis.visual.visual_domain import NodeStats
+from srcthesis.visual.weight_tracker import NodeStats
 from srcthesis.experiment.experiment import BinaryObservation
 import numpy as np
 

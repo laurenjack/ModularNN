@@ -8,7 +8,7 @@ def __all_low_enough(w2):
             return False
     return True
 
-def (w1, upper):
+def __all_high_enough(w1, upper):
     for w in np.nditer(w1):
         if abs(w) <= upper:
             return False
@@ -177,7 +177,9 @@ def each_layer_one_conv(shape):
 def each_layer_one_fc(shape):
     return __each_layer_one(shape[0], shape)
 
-result = each_layer_one_conv([5, 5, 1, 32])
+def orthog_init(sizes):
+    """Given a set of weight matracies"""
+    pass
 
 # n_in = 1000
 # variance = 1.0/float(n_in)

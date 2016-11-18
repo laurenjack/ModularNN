@@ -51,7 +51,8 @@ def plot_feature_map_for(big_weights, neuron_indexes, network):
         w = network.weights[0][ind]
         as_image = w.reshape(28, 28)
         #unique = np.where(im_sum < 0.5, as_image, np.zeros((28, 28)))
-        im_sum += np.where(as_image > 0.75, bw*as_image, np.zeros((28, 28)))
+        #im_sum += np.where(as_image > 0.75, bw*as_image, np.zeros((28, 28)))
+        im_sum += bw*as_image
         w_to_hinton(as_image, fig_num, sub)
         # n_count += 1
         # if n_count%n == 0:

@@ -1,6 +1,6 @@
 import random
 
-from srcthesis.visual import visual_domain as vd
+from srcthesis.visual import weight_tracker as vd
 
 #Third party libraries
 import numpy as np
@@ -69,7 +69,7 @@ class NetworkRunner:
             else:
                 print "Epoch {0} complete.".format(j)
 
-    def sgd_tracking_error(self, network, training_data, mini_batch_size, epochs, test_data=None, report_grad_epochs=[]):
+    def sgd_tracking_error(self, network, training_data, mini_batch_size, epochs, test_data=None, report_grad_epochs=[], wt=vd.NullStats()):
         #train_errors = []
         test_errors = []
         if test_data: n_test = len(test_data)
@@ -88,9 +88,9 @@ class NetworkRunner:
                 reported_dws.append(dw)
                 reported_dbs.append(db)
 
-            if (j+1)%30 == 0:
-                for act in network.activations:
-                    act.opt().decay_learning_rate(1.0/3.0)
+            # if (j+1)%30 == 0:
+            #     for act in network.activations:
+            #         act.opt().decay_learning_rate(1.0/3.0)
             # Make a list of lists, i.e. a lsit of distinct training data subsets
             mini_batches = [
                 training_data[k:k + mini_batch_size]
@@ -99,6 +99,7 @@ class NetworkRunner:
                 # run backpropagation on the neural net using the current batch
                 # of training data and the learning rate eta
                 network.update_mini_batch(mini_batch)
+                wt.update()
 
             if test_data:
                 #tr = self.__class_error_train(training_data, n, network)
@@ -114,6 +115,7 @@ class NetworkRunner:
             return test_errors
         else:
             return test_errors, reported_dws, reported_dbs
+
 
     def evaluate(self, network, test_data):
         """Return the number of test inputs for which the neural

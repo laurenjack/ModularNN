@@ -10,7 +10,7 @@ def draw_error_graph(title, training_error, test_error):
     plt.show()
 
 def draw_error_graph(title, legend_train):
-    """Take a title, and a list of binrary tuples: Where the tuples contain:
+    """Take a title, and a list of binary tuples: Where the tuples contain:
         - the name of the network for the the legend
         - the list of training errors for the network"""
     plt.figure(1)
@@ -22,3 +22,18 @@ def draw_error_graph(title, legend_train):
     plt.legend(legends)
     plt.ylim([0, 0.5])
     plt.show()
+
+def plot_modes(mode_stats):
+    #Take the diagonals of the mode matrix to get each mode
+    diags = mode_stats.get_diagonals()
+    non_diags = mode_stats.get_max_non_diags()
+    __plot(diags, 1)
+    __plot(non_diags, 2)
+    plt.show()
+
+def __plot(elements, fig_num):
+    plt.figure(fig_num)
+    axes = plt.gca()
+    axes.set_ylim([-100, 700])
+    for i, values in elements.items():
+        plt.plot(values)
