@@ -5,6 +5,9 @@ from dropout import DropNull
 import random
 
 class Network:
+    """The code for this class is a modified version of that provided in Michael Nielsen's
+    fantastic free book: http://neuralnetworksanddeeplearning.com
+    """
 
     def __init__(self, weights, biases, activations, name='network', drop_scheme=DropNull()):
         """Create a neural network, specified by the layers which have varying sizes and activations"""
@@ -76,15 +79,6 @@ class Network:
         act = self.activations[-1]
         delta = self.cost_derivative(a, y) #* act.prime(a_values[-1]))
         nabla_w[-1], nabla_b[-1] = act.weight_grad(delta, a_values[-2])
-        #nabla_b[-1] = delta
-        #nabla_w[-1] = np.matmul(delta, a_values[-2].transpose())
-
-        # Note that the variable l in the loop below is used a little
-        # differently to the notation in Chapter 2 of the book.  Here,
-        # l = 1 means the last layer of neurons, l = 2 is the
-        # second-last layer, and so on.  It's a renumbering of the
-        # scheme in the book, used here to take advantage of the fact
-        # that Python can use negative indices in lists.
         for l in xrange(2, self.num_layers):
             act = self.activations[-l]
             ap = act.prime(a_values[-l])
