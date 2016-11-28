@@ -6,6 +6,35 @@ from optimizers import *
 from dropout import *
 
 def mix_network(sizes, acts, hyp_params, drop=(None, None), reg=False):
+    """Creates and returns a nerual network.
+
+    This creation includes:
+    - initializing the weights at each layer
+    - creating the activations at each layer
+    - creating the optimizer at each layer, e.g. sgd with reguralisation
+    - initializing the Dropout scheme, if there is any
+
+    Keyword arguments:
+       sizes -- The integer sizes of each layer of the network
+
+       acts -- A list of strings that correspond to the activation to be
+       produced at each layer. E.g. ['relu', 'sm']. This must always be
+       one element shorter than sizes, because there is no activation on
+       the input layer
+
+       hyp_params -- A list of hyper_parameter scalars/tuples the same
+       length as acts. Usually, each element will be the learning rate
+       for that layer, however some activation require additional hyper-
+       params, in which case a tuple should be used.
+
+       drop -- A binary tuple specifying the drop out scheme. The first
+       element specifies the type of DropOut scheme e.g. 'dropout'. The
+       second element n, specifies the keep probability 1/n
+
+       reg -- If true, sgd with regularisation will be used, if false
+       vanilla sgd will be used.
+
+    """
     #Construct the weights and biases
     weights, biases = [], []
     for act, hp, s0, s1 in zip(acts, hyp_params, sizes[:-1], sizes[1:]):
