@@ -1,11 +1,12 @@
 import numpy as np
 import scipy
 from network import Network
+from network_matrix import MatrixNetwork
 from activations import *
 from optimizers import *
 from dropout import *
 
-def mix_network(sizes, acts, hyp_params, drop=(None, None), reg=False):
+def mix_network(sizes, acts, hyp_params, drop=(None, None), reg=False, no_biases=False):
     """Creates and returns a nerual network.
 
     This creation includes:
@@ -34,18 +35,26 @@ def mix_network(sizes, acts, hyp_params, drop=(None, None), reg=False):
        reg -- If true, sgd with regularisation will be used, if false
        vanilla sgd will be used.
 
+       no_biases - If true, the biases will be set to zero and sgd will
+       not update them.
+
     """
     #Construct the weights and biases
     weights, biases = [], []
+    prev_act = None
     for act, hp, s0, s1 in zip(acts, hyp_params, sizes[:-1], sizes[1:]):
-        w, b = __construct_w_b(act, s0, s1, hp)
+        #Check for nors, which produce 2 outputs
+        if(prev_act == 'nor'):
+            s0 *= 2
+        w, b = __construct_w_b(act, s0, s1, hp, no_biases)
         weights.append(w)
         biases.append(b)
+        prev_act = act
 
     #Construct each activation
     activations = []
     for act, hp, width in zip(acts, hyp_params, sizes[1:]):
-        activations.append(__construct_act(act, hp, width, reg))
+        activations.append(__construct_act(act, hp, width, reg, no_biases))
 
     #Create the name
     name = __create_name(acts)
@@ -61,7 +70,8 @@ def mix_network(sizes, acts, hyp_params, drop=(None, None), reg=False):
     else:
         drop_scheme = DropNull()
 
-    return Network(weights, biases, activations, name=name, drop_scheme=drop_scheme)
+    #return Network(weights, biases, activations, name=name, drop_scheme=drop_scheme)
+    return MatrixNetwork(weights, biases, activations, name=name, drop_scheme=drop_scheme)
 
 
 def relu_with_linear_final(sizes, eta, weights=None, biases=None):
@@ -84,7 +94,7 @@ def saxe_init(sizes, acts, hyp_params, sigma31, use_saxe_weights):
     weights, U, S, Vt = __svd_weights(sizes, sigma31, use_saxe_weights)
     biases = [np.zeros((s, 1)) for s in sizes[1:]]
     #Create activations
-    activations = [__construct_act(act, hp, w, saxe_hack=True)
+    activations = [__construct_act(act, hp, w, no_biases=True)
             for act, hp, w in zip(acts, hyp_params, sizes[1:])]
     return Network(weights, biases, activations), U, S, Vt
 
@@ -150,16 +160,15 @@ def __positive_normal(c, s1, s0):
     return c*abs(np.random.randn(s1, s0))
 
 
-def __construct_w_b(act_string, s0, s1, hyp_params):
+def __construct_w_b(act_string, s0, s1, hyp_params, no_biases):
     xc = 1.0 / float(s0) ** 0.5
-    if act_string == 'sig' or act_string == 'lin':
+    if act_string == 'sig':
         weights = 16 * xc * np.random.randn(s1, s0)
         biases = 16* xc* np.random.randn(s1, 1)
-    elif act_string == 'or':
-        w_scale = xc * hyp_params[1]
-        weights = __positive_normal(w_scale, s1, s0)
-        biases = __positive_normal(w_scale, s1, 1)
-    elif act_string == 'and':
+    elif act_string == 'tanh' or act_string == 'lin':
+        weights = xc * np.random.randn(s1, s0)
+        biases = xc * np.random.randn(s1, 1)
+    elif act_string == 'or' or act_string == 'and' or act_string == 'nor':
         w_scale = xc * hyp_params[1]
         weights = __positive_normal(w_scale, s1, s0)
         biases = __positive_normal(w_scale, s1, 1)
@@ -171,30 +180,37 @@ def __construct_w_b(act_string, s0, s1, hyp_params):
         biases = 0.1 * np.random.randn(s1, 1)
     else:
         raise NotImplementedError('Factory does not handle the constuction of the activation: ' + act_string)
+    if no_biases:
+        biases = np.zeros((s1, 1))
     return weights, biases
 
 
-def __construct_act(act_string, hp, width, reg=False, saxe_hack=False):
+def __construct_act(act_string, hp, width, reg=False, no_biases=False):
 
     if act_string == 'sig':
-        sgd = create_sgd(hp, reg, saxe_hack)
+        sgd = create_sgd(hp, reg, no_biases)
         return Sigmoid(sgd)
-    if act_string == 'or':
+    if act_string == 'tanh':
+        sgd = create_sgd(hp, reg, no_biases)
+        return Tanh(sgd)
+    if act_string == 'or' or act_string == 'nor':
         eta = hp[0]
         pos_sgd = create_pos_sgd(eta, reg)
+        if act_string == 'nor':
+            return NoisyOrNegable(pos_sgd)
         return NoisyOr(pos_sgd)
     if act_string == 'and':
         eta = hp[0]
         pos_sgd = create_pos_sgd(eta, reg)
         return NoisyAnd(pos_sgd)
     if act_string == 'sm':
-        sgd = create_sgd(hp, reg, saxe_hack)
+        sgd = create_sgd(hp, reg, no_biases)
         return Softmax(sgd)
     if act_string == 'relu':
-        sgd = create_sgd(hp, reg, saxe_hack)
+        sgd = create_sgd(hp, reg, no_biases)
         return Relu(width, sgd)
     if act_string == 'lin':
-        sgd = create_sgd(hp, reg, saxe_hack)
+        sgd = create_sgd(hp, reg, no_biases)
         return Linear(sgd)
 
     raise NotImplementedError('Factory does not handle the constuction of the activation: '+act_string)

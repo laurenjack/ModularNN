@@ -39,6 +39,10 @@ class NetworkRunner:
                 for k in xrange(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
                 # run backpropagation on the neural net using the current batch
+                x_list, y_list = zip(*mini_batch)
+                X = np.concatenate(x_list, axis=1)
+                Y = np.concatenate(y_list, axis=1)
+                mini_batch = (X, Y)
                 network.update_mini_batch(mini_batch)
                 #Update the weight tracker, will keep information about the weights over time
                 wt.update()
@@ -49,7 +53,8 @@ class NetworkRunner:
                 print "Epoch {0}: {1} / {2}".format(
                     j, no_correct, n_test)
             else:
-                print "Epoch {0} complete.".format(j)
+                pass
+                #print "Epoch {0} complete.".format(j)
 
         #Report the test error at the end of each epoxh, and the gradients at the required epochs
         # if the user request these

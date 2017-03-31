@@ -27,16 +27,18 @@ runner = nr.NetworkRunner()
 """Create the network, the length of sizes is always one more than that of acts,
 due to the input layer. See network factory for a look at all the activations that
 can be constructed. The hyp_params is usually just an array of learning rates,
-corresponding to the units at each layer. However, and units require both a
+corresponding to the units at each layer. However, 'and' units require both a
 learning rate eta, followed by a constant scale c (to scale the initial weights).
 
 This factory does everything such as setting up the activations, initializing the
 weights and building the optimizers"""
-network = nf.mix_network(sizes=[784, 30, 30, 10], acts=['sig', 'and', 'sm'], hyp_params=[0.03, (0.1, 0.01), 0.03])
+network = nf.mix_network(sizes=[784, 30, 10], acts=['tanh', 'sm'], hyp_params=[0.3, 0.3])
+#network = nf.mix_network(sizes=[784, 30, 10], acts=['nor', 'and'], hyp_params=[(0.1, 0.01), (0.1, 0.001)])
+#network = nf.mix_network(sizes=[784, 30, 30, 10], acts=['sig', 'and', 'sm'], hyp_params=[0.03, (0.1, 0.01), 0.03])
 
 """Run the network. Train it using the training set and evaluate on the validation
 set"""
-validation_errors = runner.sgd(network, training_data, 20, 10, validation_data)
+validation_errors = runner.sgd(network, training_data, 20, 40, validation_data)
 
 """Display the validation errors over time using the error drawer"""
 ed.draw_error_graph("MNIST valdiation Error", ("tut network", validation_errors))

@@ -55,6 +55,32 @@ class NoisyOr(Activation):
     def optimzer(self):
         return self.optimizer
 
+class NoisyOrNegable(Activation):
+
+    def apply(self, z):
+        neg = np.exp(-z)
+        pos = 1.0 - neg
+        return np.concatenate((pos, neg), axis=0)
+
+    def prime(self, a):
+        s1 = a.shape[0]/2
+        #Make array that allows for 1 operation to compute gradient
+        ones = np.ones((s1, 1))
+        two_as = 2* a[s1:]
+        one_op = np.concatenate((ones, two_as), axis=0)
+        return one_op - a
+
+    def weight_grad(self, delta, a):
+        #Must join the positive and negative parts of delta first
+        s1 = delta.shape[0]/2
+        delta = delta.reshape((s1, 2), order='F')
+        delta = np.sum(delta, axis=1).reshape(30, 1)
+        dw = np.matmul(delta, a.transpose())
+        db = delta
+        return dw, db
+
+
+
 class NoisyAnd(Activation):
 
     def apply(self, z):
@@ -85,10 +111,20 @@ class Softmax(Activation):
 
     def apply(self, z):
         ez = np.exp(z)
-        return ez/np.sum(ez)
+        return ez/np.sum(ez, axis=0)
 
     def prime(self, a):
         return a*(1-a)
+
+class Tanh(Activation):
+
+    def apply(self, z):
+        return np.tanh(z)
+
+    def prime(self, a):
+        return 1.0 - a**2
+
+
 
 
 

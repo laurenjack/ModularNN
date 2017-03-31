@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 2.7.11 (/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="Assignment4" />
+    <orderEntry type="module" module-name="untitled" />
+    <orderEntry type="module" module-name="Project1" />
+    <orderEntry type="module" module-name="comp421" />
+    <orderEntry type="module" module-name="Initialization" />
+    <orderEntry type="module" module-name="assignments_421" />
+    <orderEntry type="module" module-name="Comp421Assignments" />
+    <orderEntry type="module" module-name="GaussianGenerator" />
+  </component>
+  <component name="TestRunnerService">
+    <option name="PROJECT_TEST_RUNNER" value="Unittests" />
+  </component>
+</module>
