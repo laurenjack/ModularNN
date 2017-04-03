@@ -5,6 +5,7 @@ from kde_regularizer import KdeReg
 import random
 import math
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 K = 1.0 / math.sqrt(2.0 * math.pi)
 
@@ -12,12 +13,12 @@ def test_whole_data_set():
     """Visually test if the kde Regularizer minimizes the KL Divergence
     between an isotropic Gaussian and the Kernel Density Estimate in
     the z space"""
-    d = 2
+    d = 20
     r = 100
-    m = 20
+    m = 50
     kde = KdeReg(d)
     #Sample 5 lots of 15 different clusters from a uniform distribution
-    n = 1000
+    n = 100000
     zs_and_ts = []
     # gauss = [(np.random.randn(d, 1), 1) for i in xrange(n)]
     # zs_and_ts.extend(gauss)
@@ -50,11 +51,14 @@ def test_whole_data_set():
         print "Epoch:" + str(i)
         random.shuffle(zs_and_ts)
         zs, targets = zip(*zs_and_ts)
+        start = datetime.now()
         batches = [np.concatenate(zs[k:k + m], axis=1) for k in xrange(0, n, m)]
         new_zs = []
         # Compute f(z)
         reg_eta = 0.25
         density_stats = kde_reg.f(batches, d, r, n, reg_eta)
+        end = datetime.now();
+        print (start - end).total_seconds()
         b_index = 0
         for batch in batches:
             m = batch.shape[1]
